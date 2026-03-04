@@ -123,20 +123,7 @@ def get_all_users():
 @cache.cached(timeout=300, key_prefix='todos')
 def get_todos():
     todos = Todo.query.all()
-    
-    return jsonify([{
-        'id': todo.id,
-        'title': todo.title,
-        'description': todo.description,
-        'assignee_id': todo.assignee_id,
-        'assignee': todo.assignee.username if todo.assignee else None,
-        'start_time': todo.start_time.isoformat() if todo.start_time else None,
-        'end_time': todo.end_time.isoformat() if todo.end_time else None,
-        'priority': todo.priority,
-        'status': todo.status,
-        'completed': todo.completed,
-        'created_at': todo.created_at.isoformat()
-    } for todo in todos])
+    return jsonify([todo.to_dict() for todo in todos])
 
 @app.route('/api/todos', methods=['POST'])
 def create_todo():
@@ -162,19 +149,7 @@ def create_todo():
     # 清除缓存
     cache.delete('todos')
     
-    return jsonify({
-        'id': new_todo.id,
-        'title': new_todo.title,
-        'description': new_todo.description,
-        'assignee_id': new_todo.assignee_id,
-        'assignee': new_todo.assignee.username if new_todo.assignee else None,
-        'start_time': new_todo.start_time.isoformat() if new_todo.start_time else None,
-        'end_time': new_todo.end_time.isoformat() if new_todo.end_time else None,
-        'priority': new_todo.priority,
-        'status': new_todo.status,
-        'completed': new_todo.completed,
-        'created_at': new_todo.created_at.isoformat()
-    }), 201
+    return jsonify(new_todo.to_dict()), 201
 
 @app.route('/api/todos/<int:id>', methods=['GET'])
 def get_todo(id):
@@ -183,19 +158,7 @@ def get_todo(id):
     if not todo:
         return jsonify({'message': 'Todo not found'}), 404
     
-    return jsonify({
-        'id': todo.id,
-        'title': todo.title,
-        'description': todo.description,
-        'assignee_id': todo.assignee_id,
-        'assignee': todo.assignee.username if todo.assignee else None,
-        'start_time': todo.start_time.isoformat() if todo.start_time else None,
-        'end_time': todo.end_time.isoformat() if todo.end_time else None,
-        'priority': todo.priority,
-        'status': todo.status,
-        'completed': todo.completed,
-        'created_at': todo.created_at.isoformat()
-    })
+    return jsonify(todo.to_dict())
 
 @app.route('/api/todos/<int:id>', methods=['PUT'])
 def update_todo(id):
@@ -223,19 +186,7 @@ def update_todo(id):
     # 清除缓存
     cache.delete('todos')
     
-    return jsonify({
-        'id': todo.id,
-        'title': todo.title,
-        'description': todo.description,
-        'assignee_id': todo.assignee_id,
-        'assignee': todo.assignee.username if todo.assignee else None,
-        'start_time': todo.start_time.isoformat() if todo.start_time else None,
-        'end_time': todo.end_time.isoformat() if todo.end_time else None,
-        'priority': todo.priority,
-        'status': todo.status,
-        'completed': todo.completed,
-        'created_at': todo.created_at.isoformat()
-    })
+    return jsonify(todo.to_dict())
 
 @app.route('/api/todos/<int:id>', methods=['DELETE'])
 def delete_todo(id):
@@ -284,19 +235,7 @@ def update_todo_status(id):
     # 清除缓存
     cache.delete('todos')
     
-    return jsonify({
-        'id': todo.id,
-        'title': todo.title,
-        'description': todo.description,
-        'assignee_id': todo.assignee_id,
-        'assignee': todo.assignee.username if todo.assignee else None,
-        'start_time': todo.start_time.isoformat() if todo.start_time else None,
-        'end_time': todo.end_time.isoformat() if todo.end_time else None,
-        'priority': todo.priority,
-        'status': todo.status,
-        'completed': todo.completed,
-        'created_at': todo.created_at.isoformat()
-    })
+    return jsonify(todo.to_dict())
 
 # 任务依赖关系路由
 @app.route('/api/task-dependencies', methods=['POST'])
@@ -435,19 +374,7 @@ def get_timeline():
     # 按开始时间排序
     todos = query.order_by(Todo.start_time.asc()).all()
     
-    return jsonify([{
-        'id': todo.id,
-        'title': todo.title,
-        'description': todo.description,
-        'assignee_id': todo.assignee_id,
-        'assignee': todo.assignee.username if todo.assignee else None,
-        'start_time': todo.start_time.isoformat() if todo.start_time else None,
-        'end_time': todo.end_time.isoformat() if todo.end_time else None,
-        'priority': todo.priority,
-        'status': todo.status,
-        'completed': todo.completed,
-        'created_at': todo.created_at.isoformat()
-    } for todo in todos])
+    return jsonify([todo.to_dict() for todo in todos])
 
 # 任务完成情况统计
 @app.route('/api/stats/completion', methods=['GET'])
